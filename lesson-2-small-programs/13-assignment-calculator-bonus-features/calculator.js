@@ -16,7 +16,31 @@ const readline = require('readline-sync');
 
 const MESSAGES = require('./calculator_messages.json');
 
-let language = 'en';
+// Set language for calculator.
+let language;
+let languageChoice;
+
+prompt('1) English 2) Español 3) Français');
+languageChoice = readline.question();
+
+while (!['1', '2', '3'].includes(languageChoice)) {
+  prompt('1) English 2) Español 3) Français');
+  languageChoice = readline.question();
+}
+
+switch (languageChoice) {
+  case '1':
+    language = 'en';
+    break;
+  case '2':
+    language = 'es';
+    break;
+  case '3':
+    language = 'fr';
+    break;
+}
+
+// Output message control
 
 function messages(languageKey, message) {
   return MESSAGES[languageKey][message];
@@ -26,9 +50,13 @@ function prompt(msg) {
   console.log(`=> ${msg}`);
 }
 
+// Number validation
+
 function invalidNumber(num) {
   return num.trimStart() === '' || Number.isNaN(Number(num));
 }
+
+// Input loops section
 
 let number1;
 let number2;
@@ -60,6 +88,8 @@ function getInputs() {
   }
 }
 
+// Output section
+
 let output;
 
 function findResult() {
@@ -79,6 +109,8 @@ function findResult() {
   }
   prompt(messages(language, 'result') + ` ${output}.`);
 }
+
+// Main calculator loop section
 
 let again;
 
@@ -100,31 +132,8 @@ function runCalculator() {
   }
 }
 
-// Set language for calculator.
-let languageChoice;
-
-prompt('1) English 2) Español 3) Français');
-languageChoice = readline.question();
-
-while (!['1', '2', '3'].includes(languageChoice)) {
-  prompt('1) English 2) Español 3) Français');
-  languageChoice = readline.question();
-}
-
-switch (languageChoice) {
-  case '1':
-    language = 'en';
-    break;
-  case '2':
-    language = 'es';
-    break;
-  case '3':
-    language = 'fr';
-    break;
-}
-
-
 // Begin calculator.
+
 prompt(messages(language, 'welcome'));
 
 runCalculator();
