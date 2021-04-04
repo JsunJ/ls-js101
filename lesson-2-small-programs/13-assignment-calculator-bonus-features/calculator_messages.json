@@ -1,0 +1,11 @@
+{
+  "welcome": "Welcome to the Calculator!",
+  "firstNumber": "What is the first number?",
+  "secondNumber": "What is the second number?",
+  "validNumber": "Please enter a valid number.",
+  "operation": "What operation would you like to perform?\n1) Add 2) Subtract 3) Multiply 4) Divide",
+  "validOperation": "Please enter a valid operation.",
+  "result": "The result is",
+  "again": "Would you like to perform another calculation?\n1) Yes 2) No",
+  "validAgain": "Please enter 1 to perform another calculation or 2 to exit."
+}

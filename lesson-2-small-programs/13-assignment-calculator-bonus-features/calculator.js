@@ -9,6 +9,8 @@
 
 const readline = require('readline-sync');
 
+const MESSAGES = require('./calculator_messages.json');
+
 function prompt(msg) {
   console.log(`=> ${msg}`);
 }
@@ -22,27 +24,27 @@ let number2;
 let operation;
 
 function getInputs() {
-  prompt('What is the first number?');
+  prompt(MESSAGES.firstNumber);
   number1 = readline.question();
 
   while (invalidNumber(number1)) {
-    prompt('Please enter a valid number.');
+    prompt(MESSAGES.validNumber);
     number1 = readline.question();
   }
 
-  prompt('What is the second number?');
+  prompt(MESSAGES.secondNumber);
   number2 = readline.question();
 
   while (invalidNumber(number2)) {
-    prompt('Please enter a valid number.');
+    prompt(MESSAGES.validNumber);
     number2 = readline.question();
   }
 
-  prompt('What operation would you like to perform?\n1) Add 2) Subtract 3) Multiply 4) Divide');
+  prompt(MESSAGES.operation);
   operation = readline.question();
 
   while (!['1', '2', '3', '4'].includes(operation)) {
-    prompt('Please choose a valid operation.');
+    prompt(MESSAGES.validOperation);
     operation = readline.question();
   }
 }
@@ -64,7 +66,7 @@ function findResult() {
       output = Number(number1) / Number(number2);
       break;
   }
-  prompt(`The result is ${output}.`);
+  prompt(MESSAGES.result + ` ${output}.`);
 }
 
 let again;
@@ -73,11 +75,11 @@ function runCalculator() {
   getInputs();
   findResult();
 
-  prompt('Would you like to perform another calculation?\n1) Yes 2) No');
+  prompt(MESSAGES.again);
   again = readline.question();
 
   while (!['1', '2'].includes(again)) {
-    prompt('Please enter 1 to perform another calculation or 2 to exit.');
+    prompt(MESSAGES.validAgain);
     again = readline.question();
   }
 
@@ -86,6 +88,6 @@ function runCalculator() {
   }
 }
 
-prompt('Welcome to the Calculator!');
+prompt(MESSAGES.welcome);
 
 runCalculator();
