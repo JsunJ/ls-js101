@@ -1,11 +1,35 @@
 {
-  "welcome": "Welcome to the Calculator!",
-  "firstNumber": "What is the first number?",
-  "secondNumber": "What is the second number?",
-  "validNumber": "Please enter a valid number.",
-  "operation": "What operation would you like to perform?\n1) Add 2) Subtract 3) Multiply 4) Divide",
-  "validOperation": "Please enter a valid operation.",
-  "result": "The result is",
-  "again": "Would you like to perform another calculation?\n1) Yes 2) No",
-  "validAgain": "Please enter 1 to perform another calculation or 2 to exit."
+  "en": {
+    "welcome": "Welcome to the Calculator!",
+    "firstNumber": "What is the first number?",
+    "secondNumber": "What is the second number?",
+    "validNumber": "Please enter a valid number.",
+    "operation": "What operation would you like to perform?\n1) Add 2) Subtract 3) Multiply 4) Divide",
+    "validOperation": "Please enter a valid operation.",
+    "result": "The result is",
+    "again": "Would you like to perform another calculation?\n1) Yes 2) No",
+    "validAgain": "Please enter 1 to perform another calculation or 2 to exit."
+  },
+  "es": {
+    "welcome": "Bienvenido a la Calculadora!",
+    "firstNumber": "Cual es el primer numero?",
+    "secondNumber": "Cual es el segundo numero?",
+    "validNumber": "Por favor ingrese un número valido.",
+    "operation": "Qué operación le gustaría realizar?\n1) Agregar 2) Sustraer 3) Multiplicar 4) Dividir",
+    "validOperation": "Ingrese una operación válida.",
+    "result": "El resultado es",
+    "again": "Le gustaría realizar otro cálculo?\n1) Sí 2) No",
+    "validAgain": "Introduzca 1 para realizar otro cálculo o 2 para salir."
+  },
+  "fr": {
+    "welcome": "Bienvenue dans la calculatrice!",
+    "firstNumber": "Quel est le premier chiffre?",
+    "secondNumber": "Quel est le deuxième nombre?",
+    "validNumber": "S'il vous plait, entrez un nombre valide.",
+    "operation": "Quelle opération souhaitez-vous effectuer?\n1) Ajouter 2) Soustraire 3) Multiplier 4) Diviser",
+    "validOperation": "Veuillez saisir une opération valide.",
+    "result": "Le résultat est",
+    "again": "Souhaitez-vous effectuer un autre calcul?\n1) Oui 2) Non",
+    "validAgain": "Veuillez entrer 1 pour effectuer un autre calcul ou 2 pour quitter."
+  }
 }
