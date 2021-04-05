@@ -53,7 +53,7 @@ function prompt(msg) {
 // Number validation
 
 function invalidNumber(num) {
-  return num.trimStart() === '' || Number.isNaN(Number(num));
+  return Number.isNaN(Number(num));
 }
 
 // Input loops section
@@ -64,19 +64,19 @@ let operation;
 
 function getInputs() {
   prompt(messages(language, 'firstNumber'));
-  number1 = readline.question();
+  number1 = parseFloat(readline.question());
 
   while (invalidNumber(number1)) {
     prompt(messages(language, 'validNumber'));
-    number1 = readline.question();
+    number1 = parseFloat(readline.question());
   }
 
   prompt(messages(language, 'secondNumber'));
-  number2 = readline.question();
+  number2 = parseFloat(readline.question());
 
   while (invalidNumber(number2)) {
     prompt(messages(language, 'validNumber'));
-    number2 = readline.question();
+    number2 = parseFloat(readline.question());
   }
 
   prompt(messages(language, 'operation'));
@@ -95,16 +95,16 @@ let output;
 function findResult() {
   switch (operation) {
     case '1':
-      output = Number(number1) + Number(number2);
+      output = (number1) + (number2);
       break;
     case '2':
-      output = Number(number1) - Number(number2);
+      output = (number1) - (number2);
       break;
     case '3':
-      output = Number(number1) * Number(number2);
+      output = (number1) * (number2);
       break;
     case '4':
-      output = Number(number1) / Number(number2);
+      output = (number1) / (number2);
       break;
   }
   prompt(messages(language, 'result') + ` ${output}.`);
