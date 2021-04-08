@@ -102,18 +102,13 @@ function repeat() {
 
   if (answer === 'y') {
     console.clear();
-    runCalculator();
+    main();
   } else {
     prompt(messages('exit'));
   }
 }
 
 function runCalculator() {
-
-  getLoan();
-  getInterest();
-  getYears();
-
   let monthlyInterestRate = (annualPercentageRate / 100) / 12;
   let loanDurationMonths = loanDurationYears * 12;
 
@@ -132,5 +127,27 @@ function runCalculator() {
   repeat();
 }
 
+function runZeroInterestCalculator() {
+  let loanDurationMonths = loanDurationYears * 12;
+  let monthlyPayment = loanAmount / loanDurationMonths;
+
+  prompt(messages('calculating'));
+  prompt(messages('monthlyPay') + `${formatDollars(monthlyPayment)} for ${loanDurationMonths} months.`);
+
+  repeat();
+}
+
+function main() {
+  getLoan();
+  getInterest();
+  getYears();
+
+  if (annualPercentageRate === 0) {
+    runZeroInterestCalculator();
+  } else {
+    runCalculator();
+  }
+}
+
 prompt(messages('welcome'));
-runCalculator();
+main ();
