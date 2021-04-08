@@ -9,8 +9,13 @@
 // Calculate the monthly payment.
 
 const readline = require('readline-sync');
+const MESSAGES = require('./loan_calculator_messages.json');
 
-// Message formatting
+// Messages
+
+function messages(msg) {
+  return MESSAGES[msg];
+}
 
 function prompt(msg) {
   console.log(`=> ${msg}`);
@@ -45,53 +50,53 @@ let annualPercentageRate;
 let loanDurationYears;
 
 function getLoan() {
-  prompt('Enter the loan amount.');
+  prompt(messages('loanRequest'));
   loanAmount = parseFloat(readline.question());
 
   while (invalidNumber(loanAmount)) {
-    prompt('Please enter a valid number for the loan amount.');
+    prompt(messages('invalidLoan'));
     loanAmount = parseFloat(readline.question());
   }
 
-  prompt(`You entered $${formatDollars(loanAmount)}.`);
+  prompt(messages('loanReadback') + `${formatDollars(loanAmount)}.`);
 }
 
 function getInterest() {
-  prompt('Enter the Annual Percentage Rate (APR).');
-  prompt('Please use one of these formats: 5 | 5.5 | 5.75 | 10.975');
+  prompt(messages('interestRequest'));
+  prompt(messages('interestFormat'));
   annualPercentageRate = parseFloat(readline.question());
 
   while (invalidNumber(annualPercentageRate)) {
-    prompt('Please enter a valid number for the APR.');
-    prompt('Please use one of these formats: 5 | 5.5 | 5.50 | 5.123');
+    prompt(messages('invalidInterest'));
+    prompt(messages('interestFormat'));
     annualPercentageRate = parseFloat(readline.question());
   }
 
-  prompt(`You entered ${formatAPR(annualPercentageRate)}% APR.`);
+  prompt(messages('interestReadback') + `${formatAPR(annualPercentageRate)}% APR.`);
 }
 
 function getYears() {
-  prompt('Enter the loan duration in whole or half years.');
-  prompt('Please use one of these formats: 5 | 5.5 | 0.5 | .5');
+  prompt(messages('yearsRequest'));
+  prompt(messages('yearsFormat'));
   loanDurationYears = readline.question();
 
   while (invalidYear(loanDurationYears) || invalidNumber(loanDurationYears)) {
-    prompt('Please enter a valid loan duration in whole or half years.');
-    prompt('Please use one of these formats: 5 | 5.5 | 0.5 | .5');
+    prompt(messages('invalidYears'));
+    prompt(messages('yearsFormat'));
     loanDurationYears = readline.question();
   }
 
   loanDurationYears = parseFloat(loanDurationYears);
 
-  prompt(`You entered ${loanDurationYears} years.`);
+  prompt(messages('yearsReadback') + `${loanDurationYears} years.`);
 }
 
 function repeat() {
-  prompt('Would you like to calculate another loan? Y / N');
+  prompt(messages('repeatQuestion'));
   let answer = readline.question().toLowerCase();
 
   while (answer !== 'y' && answer !== 'n') {
-    prompt('Please enter "Y" for yes or "N" for no.');
+    prompt(messages('invalidAnswer'));
     answer = readline.question().toLowerCase();
   }
 
@@ -99,12 +104,11 @@ function repeat() {
     console.clear();
     runCalculator();
   } else {
-    prompt('Exiting calculator.');
+    prompt(messages('exit'));
   }
 }
 
 function runCalculator() {
-  prompt('Welcome to Mortgage Calculator!');
 
   getLoan();
   getInterest();
@@ -120,12 +124,13 @@ function runCalculator() {
   let totalCost = loanDurationMonths * monthlyPayment;
   let totalInterest = totalCost - loanAmount;
 
-  prompt('--------------------');
-  prompt(`Your monthly payment is $${formatDollars(monthlyPayment)}.`);
-  prompt(`Your total interest on $${formatDollars(loanAmount)} is $${formatDollars(totalInterest)}.`);
-  prompt(`Your total of ${loanDurationMonths} payments is $${formatDollars(totalCost)}.`);
+  prompt(messages('calculating'));
+  prompt(messages('monthlyPay') + `${formatDollars(monthlyPayment)}.`);
+  prompt(messages('totalInInterest') + `${formatDollars(loanAmount)} is $${formatDollars(totalInterest)}.`);
+  prompt(messages('overallCost') + `${loanDurationMonths} payments is $${formatDollars(totalCost)}.`);
 
   repeat();
 }
 
+prompt(messages('welcome'));
 runCalculator();

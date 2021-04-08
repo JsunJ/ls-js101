@@ -1,0 +1,21 @@
+{
+  "welcome": "Welcome to the Mortgage Calculator!",
+  "loanRequest": "Enter the loan amount.",
+  "invalidLoan": "Please enter a valid number for the loan amount.",
+  "loanReadback": "You entered $ ",
+  "interestRequest": "Now enter the Annual Percentage Rate (APR).",
+  "interestFormat": "Please use one of these number formats: 5 | 5.5 | 5.55 | 55.555",
+  "invalidInterest": "Please enter a valid number for the APR.",
+  "interestReadback": "You entered ",
+  "yearsRequest": "Now enter the loan duration in whole or half years.",
+  "yearsFormat": "Please use one of these number formats: 5 | 5.5 | 0.5 | .5",
+  "invalidYears": "Please enter a valid loan duration in whole or half years.",
+  "yearsReadback": "You entered ",
+  "repeatQuestion": "Would you like to calculate another loan? Y / N",
+  "invalidAnswer": "Please enter \"Y\" for yes or \"N\" for no.",
+  "exit": "Exiting Mortgage Calculator.",
+  "calculating": "----------\n=> Calculating...\n=> ----------",
+  "monthlyPay": "Your monthly payment is $",
+  "totalInInterest": "Your total interest on $",
+  "overallCost": "Your total of "
+}
