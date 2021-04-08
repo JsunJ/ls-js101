@@ -124,7 +124,6 @@ function runCalculator() {
   prompt(messages('totalInInterest') + `${formatDollars(loanAmount)} is $${formatDollars(totalInterest)}.`);
   prompt(messages('overallCost') + `${loanDurationMonths} payments is $${formatDollars(totalCost)}.`);
 
-  repeat();
 }
 
 function runZeroInterestCalculator() {
@@ -134,7 +133,6 @@ function runZeroInterestCalculator() {
   prompt(messages('calculating'));
   prompt(messages('monthlyPay') + `${formatDollars(monthlyPayment)} for ${loanDurationMonths} months.`);
 
-  repeat();
 }
 
 function main() {
@@ -147,6 +145,8 @@ function main() {
   } else {
     runCalculator();
   }
+
+  repeat();
 }
 
 prompt(messages('welcome'));
