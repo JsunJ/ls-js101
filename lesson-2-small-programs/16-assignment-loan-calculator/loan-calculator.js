@@ -16,8 +16,13 @@ function prompt(msg) {
   console.log(`=> ${msg}`);
 }
 
-function formatNumber(num) {
-  return parseFloat(num.toFixed(2)).toLocaleString();
+function formatDollars(num) {
+  return parseFloat(num.toFixed(2)).toLocaleString('en',
+    { minimumFractionDigits: 2 });
+}
+
+function formatAPR(num) {
+  return parseFloat(num.toFixed(3));
 }
 
 // Validation
@@ -26,55 +31,101 @@ function invalidNumber(num) {
   return Number(num) < 0 || Number.isNaN(Number(num));
 }
 
-prompt('Welcome to Mortgage Calculator!');
-
-// Inputs
+// If year includes a decimal, it must end with 5
+function invalidYear(str) {
+  if (str.includes('.')) {
+    return !str.endsWith('.5');
+  } else {
+    return false;
+  }
+}
 
 let loanAmount;
 let annualPercentageRate;
 let loanDurationYears;
 
-prompt('Enter the loan amount.');
-loanAmount = parseFloat(readline.question());
-
-while (invalidNumber(loanAmount)) {
-  prompt('Please enter a valid number for the loan amount.');
+function getLoan() {
+  prompt('Enter the loan amount.');
   loanAmount = parseFloat(readline.question());
+
+  while (invalidNumber(loanAmount)) {
+    prompt('Please enter a valid number for the loan amount.');
+    loanAmount = parseFloat(readline.question());
+  }
+
+  prompt(`You entered $${formatDollars(loanAmount)}.`);
 }
 
-prompt(`You entered $${formatNumber(loanAmount)}.`);
-
-prompt('Enter the Annual Percentage Rate (APR). Acceptable format(s): 6 | 6.0 | 12.00');
-annualPercentageRate = parseFloat(readline.question());
-
-while (invalidNumber(annualPercentageRate)) {
-  prompt('Please enter a valid number for the APR.');
+function getInterest() {
+  prompt('Enter the Annual Percentage Rate (APR).');
+  prompt('Please use one of these formats: 5 | 5.5 | 5.75 | 10.975');
   annualPercentageRate = parseFloat(readline.question());
+
+  while (invalidNumber(annualPercentageRate)) {
+    prompt('Please enter a valid number for the APR.');
+    prompt('Please use one of these formats: 5 | 5.5 | 5.50 | 5.123');
+    annualPercentageRate = parseFloat(readline.question());
+  }
+
+  prompt(`You entered ${formatAPR(annualPercentageRate)}% APR.`);
 }
 
-prompt(`You entered ${formatNumber(annualPercentageRate)}% APR.`);
+function getYears() {
+  prompt('Enter the loan duration in whole or half years.');
+  prompt('Please use one of these formats: 5 | 5.5 | 0.5 | .5');
+  loanDurationYears = readline.question();
 
-prompt('Enter the loan duration in years. Acceptable format(s): 5 | 10.0 | 10.00');
-loanDurationYears = parseFloat(readline.question());
+  while (invalidYear(loanDurationYears) || invalidNumber(loanDurationYears)) {
+    prompt('Please enter a valid loan duration in whole or half years.');
+    prompt('Please use one of these formats: 5 | 5.5 | 0.5 | .5');
+    loanDurationYears = readline.question();
+  }
 
-while (invalidNumber(loanDurationYears)) {
-  prompt('Please enter a valid number for the loan duration in years.');
-  loanDurationYears = parseFloat(readline.question());
+  loanDurationYears = parseFloat(loanDurationYears);
+
+  prompt(`You entered ${loanDurationYears} years.`);
 }
 
-prompt(`You entered ${formatNumber(loanDurationYears)} years.`);
+function repeat() {
+  prompt('Would you like to calculate another loan? Y / N');
+  let answer = readline.question().toLowerCase();
 
-let monthlyInterestRate = (annualPercentageRate / 100) / 12;
-let loanDurationMonths = loanDurationYears * 12;
+  while (answer !== 'y' && answer !== 'n') {
+    prompt('Please enter "Y" for yes or "N" for no.');
+    answer = readline.question().toLowerCase();
+  }
 
-let monthlyPayment = loanAmount *
-              (monthlyInterestRate /
-              (1 - Math.pow((1 + monthlyInterestRate), (-loanDurationMonths))));
+  if (answer === 'y') {
+    console.clear();
+    runCalculator();
+  } else {
+    prompt('Exiting calculator.');
+  }
+}
 
-let totalCost = loanDurationMonths * monthlyPayment;
-let totalInterest = totalCost - loanAmount;
+function runCalculator() {
+  prompt('Welcome to Mortgage Calculator!');
 
-prompt('--------------------');
-prompt(`Your monthly payment is $${formatNumber(monthlyPayment)}.`);
-prompt(`Your total interest on $${formatNumber(loanAmount)} is $${formatNumber(totalInterest)}.`);
-prompt(`Your total of ${formatNumber(loanDurationMonths)} payments is ${formatNumber(totalCost)}.`);
+  getLoan();
+  getInterest();
+  getYears();
+
+  let monthlyInterestRate = (annualPercentageRate / 100) / 12;
+  let loanDurationMonths = loanDurationYears * 12;
+
+  let monthlyPayment = loanAmount *
+                      (monthlyInterestRate / (1 - Math.pow(
+                        (1 + monthlyInterestRate), (-loanDurationMonths))));
+
+  let totalCost = loanDurationMonths * monthlyPayment;
+  let totalInterest = totalCost - loanAmount;
+
+  prompt('--------------------');
+  prompt(`Your monthly payment is $${formatDollars(monthlyPayment)}.`);
+  prompt(`Your total interest on $${formatDollars(loanAmount)} is $${formatDollars(totalInterest)}.`);
+  prompt(`Your total of ${loanDurationMonths} payments is $${formatDollars(totalCost)}.`);
+
+  repeat();
+}
+
+runCalculator();
