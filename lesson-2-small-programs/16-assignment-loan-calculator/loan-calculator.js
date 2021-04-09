@@ -36,6 +36,10 @@ function invalidNumber(num) {
   return Number(num) < 0 || Number.isNaN(Number(num));
 }
 
+function isZero(str) {
+  return Number(str) === 0;
+}
+
 // If year includes a decimal, it must end with 5
 function invalidYear(str) {
   if (str.includes('.')) {
@@ -80,7 +84,9 @@ function getYears() {
   prompt(messages('yearsFormat'));
   loanDurationYears = readline.question();
 
-  while (invalidYear(loanDurationYears) || invalidNumber(loanDurationYears)) {
+  while (invalidYear(loanDurationYears)   ||
+         invalidNumber(loanDurationYears) ||
+         isZero(loanDurationYears)) {
     prompt(messages('invalidYears'));
     prompt(messages('yearsFormat'));
     loanDurationYears = readline.question();
