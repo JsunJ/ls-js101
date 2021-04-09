@@ -1,13 +1,3 @@
-// Ask the user for the loan amount.
-// Validate the input.
-// Ask the user for the APR.
-// Validate the input.
-// Ask the user for the loan duration.
-// Validate the input.
-// Calculate the monthly interest rate.
-// Calculate the loan duration in months.
-// Calculate the monthly payment.
-
 const readline = require('readline-sync');
 const MESSAGES = require('./loan_calculator_messages.json');
 
@@ -40,7 +30,6 @@ function isZero(str) {
   return Number(str) === 0;
 }
 
-// If year includes a decimal, it must end with 5
 function invalidYear(str) {
   if (str.includes('.')) {
     return !str.endsWith('.5');
