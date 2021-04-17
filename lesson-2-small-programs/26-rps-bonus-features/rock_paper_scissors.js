@@ -1,11 +1,32 @@
 const readline = require('readline-sync');
-const VALID_CHOICES = ['rock', 'paper', 'scissors'];
+const VALID_CHOICES = ['r', 'p', 'sci', 'spo', 'l'];
+const FULL_CHOICES = {
+  r:    'Rock',
+  p:    'Paper',
+  sci:  'Scissors',
+  spo:  'Spock',
+  l:    'Lizard'
+};
+const WINNING_COMBOS = {
+  r:    ['sci', 'l'],
+  p:    ['r',     'spo'],
+  sci:  ['p',    'l'],
+  spo:  ['r',     'sci'],
+  l:    ['p',    'spo']
+};
+const MAXIMUM_SCORE = 5;
+
+let playerScore = 0;
+let computerScore = 0;
+
+let playerChoice;
+let computerChoice;
 
 function prompt(message) {
   console.log(`=> ${message}`);
 }
 
-function getUserChoice() {
+function getPlayerChoice() {
   prompt(`Choose one: ${VALID_CHOICES.join(', ')}`);
   let userChoice = readline.question().toLowerCase();
 
@@ -22,27 +43,53 @@ function getComputerChoice() {
   return computerChoice;
 }
 
-function displayWinner() {
-  let userChoice = getUserChoice();
-  let computerChoice = getComputerChoice();
+function playerWins(playerChoice, computerChoice) {
+  return WINNING_COMBOS[playerChoice].includes(computerChoice);
+}
 
-  prompt(`You chose ${userChoice}.`);
-  prompt(`Computer chose ${computerChoice}.`);
+function computerWins(computerChoice, playerChoice) {
+  return WINNING_COMBOS[computerChoice].includes(playerChoice);
+}
 
-  if ((userChoice === 'rock' && computerChoice === 'scissors') ||
-      (userChoice === 'scissors' && computerChoice === 'paper') ||
-      (userChoice === 'paper' && computerChoice === 'rock')) {
-    prompt('You win!');
-  } else if ((userChoice === 'scissors' && computerChoice === 'rock') ||
-              (userChoice === 'paper' && computerChoice === 'scissors') ||
-              (userChoice === 'rock' && computerChoice === 'paper')) {
-    prompt('Computer wins!');
-  } else {
-    prompt("It's a tie!");
+function tallyScore(playerChoice, computerChoice) {
+  if (playerWins(playerChoice, computerChoice)) {
+    playerScore += 1;
+  } else if (computerWins(computerChoice, playerChoice)) {
+    computerScore += 1;
   }
 }
 
-function repeat() {
+function displayRoundWinner(userChoice, computerChoice) {
+  prompt(`You chose ${FULL_CHOICES[userChoice]}.`);
+  prompt(`The computer chose ${FULL_CHOICES[computerChoice]}.`);
+
+  if (playerWins(userChoice, computerChoice)) {
+    prompt('You win this round!');
+  } else if (userChoice === computerChoice) {
+    prompt("It's a tie!");
+  } else {
+    prompt("Computer wins this round!");
+  }
+}
+
+function displayCurrentScores() {
+  prompt(`Player score = ${playerScore}. | Computer score = ${computerScore}.`);
+}
+
+function displayMatchResult() {
+
+  if (playerScore === MAXIMUM_SCORE) {
+    prompt(`You won the match!`);
+  } else if (computerScore === MAXIMUM_SCORE) {
+    prompt(`Computer won the match!`);
+  }
+}
+
+function repeatRound() {
+  runGameLoop();
+}
+
+function repeatGame() {
   prompt('Would you like to play again? (Y / N)');
   let answer = readline.question().toLowerCase();
 
@@ -53,16 +100,31 @@ function repeat() {
 
   if (answer === 'y') {
     console.clear();
-    runGame();
+    playerScore = 0;
+    computerScore = 0;
+    runGameLoop();
   } else {
-    prompt('Exiting game.');
+    prompt('Thank you for playing! Now exiting.');
   }
 }
 
-function runGame() {
-  displayWinner();
-  repeat();
+function runGameLoop() {
+  playerChoice = getPlayerChoice();
+  computerChoice = getComputerChoice();
+
+  displayRoundWinner(playerChoice, computerChoice);
+  tallyScore(playerChoice, computerChoice);
+  displayCurrentScores();
+
+  if (playerScore === MAXIMUM_SCORE || computerScore === MAXIMUM_SCORE) {
+    displayMatchResult();
+    repeatGame();
+    return;
+  }
+
+  repeatRound();
 }
 
-prompt('Welcome to Rock Paper Scissors!');
-runGame();
+prompt('Welcome to Rock Paper Scissors Spock Lizard (RPSSL)!');
+prompt('The first to 5 wins!');
+runGameLoop();
