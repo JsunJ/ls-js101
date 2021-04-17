@@ -1,6 +1,5 @@
 const readline = require('readline-sync');
-const VALID_CHOICES = ['r', 'p', 'sci', 'spo', 'l'];
-const FULL_CHOICES = {
+const VALID_CHOICES = {
   r:    'Rock',
   p:    'Paper',
   sci:  'Scissors',
@@ -9,10 +8,10 @@ const FULL_CHOICES = {
 };
 const WINNING_COMBOS = {
   r:    ['sci', 'l'],
-  p:    ['r',     'spo'],
-  sci:  ['p',    'l'],
-  spo:  ['r',     'sci'],
-  l:    ['p',    'spo']
+  p:    ['r',   'spo'],
+  sci:  ['p',   'l'],
+  spo:  ['r',   'sci'],
+  l:    ['p',   'spo']
 };
 const MAXIMUM_SCORE = 5;
 
@@ -27,20 +26,21 @@ function prompt(message) {
 }
 
 function getPlayerChoice() {
-  prompt(`Choose one: ${VALID_CHOICES.join(', ')}`);
-  let userChoice = readline.question().toLowerCase();
+  prompt(`Choose one: ${Object.keys(VALID_CHOICES).join(', ')}`);
+  let choice = readline.question().toLowerCase();
 
-  while (!VALID_CHOICES.includes(userChoice)) {
+  while (!Object.keys(VALID_CHOICES).includes(choice)) {
     prompt('That is not a valid choice.');
-    userChoice = readline.question().toLowerCase();
+    choice = readline.question().toLowerCase();
   }
-  return userChoice;
+  return choice;
 }
 
 function getComputerChoice() {
-  let randomIndex = Math.floor(Math.random() * VALID_CHOICES.length);
-  let computerChoice = VALID_CHOICES[randomIndex];
-  return computerChoice;
+  let randomIndex = Math.floor(Math.random() *
+                              Object.keys(VALID_CHOICES).length);
+  let choice = Object.keys(VALID_CHOICES)[randomIndex];
+  return choice;
 }
 
 function playerWins(playerChoice, computerChoice) {
@@ -59,13 +59,13 @@ function tallyScore(playerChoice, computerChoice) {
   }
 }
 
-function displayRoundWinner(userChoice, computerChoice) {
-  prompt(`You chose ${FULL_CHOICES[userChoice]}.`);
-  prompt(`The computer chose ${FULL_CHOICES[computerChoice]}.`);
+function displayRoundWinner(playerChoice, computerChoice) {
+  prompt(`You chose ${VALID_CHOICES[playerChoice]}.`);
+  prompt(`The computer chose ${VALID_CHOICES[computerChoice]}.`);
 
-  if (playerWins(userChoice, computerChoice)) {
+  if (playerWins(playerChoice, computerChoice)) {
     prompt('You win this round!');
-  } else if (userChoice === computerChoice) {
+  } else if (playerChoice === computerChoice) {
     prompt("It's a tie!");
   } else {
     prompt("Computer wins this round!");
@@ -90,7 +90,7 @@ function repeatRound() {
 }
 
 function repeatGame() {
-  prompt('Would you like to play again? (Y / N)');
+  prompt('Would you like to play another match? (Y / N)');
   let answer = readline.question().toLowerCase();
 
   while (answer !== 'y' && answer !== 'n') {
@@ -104,7 +104,7 @@ function repeatGame() {
     computerScore = 0;
     runGameLoop();
   } else {
-    prompt('Thank you for playing! Now exiting.');
+    prompt('Thank you for playing! Exiting RPSSL.');
   }
 }
 
@@ -126,5 +126,5 @@ function runGameLoop() {
 }
 
 prompt('Welcome to Rock Paper Scissors Spock Lizard (RPSSL)!');
-prompt('The first to 5 wins!');
+prompt('You will be playing against the computer. The first to 5 wins the match!');
 runGameLoop();
