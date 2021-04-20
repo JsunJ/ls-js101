@@ -15,11 +15,17 @@ const WINNING_COMBOS = {
 };
 const MAXIMUM_SCORE = 5;
 
-let playerScore = 0;
-let computerScore = 0;
+let scores = {
+  player: 0,
+  computer: 0
+};
 
-let playerChoice;
-let computerChoice;
+let choices = {
+  player: '',
+  computer: ''
+};
+
+let roundNumber = 1;
 
 function prompt(message) {
   console.log(`=> ${message}`);
@@ -43,53 +49,72 @@ function getComputerChoice() {
   return choice;
 }
 
-function playerWins(playerChoice, computerChoice) {
-  return WINNING_COMBOS[playerChoice].includes(computerChoice);
+function playerWins(choices) {
+  return WINNING_COMBOS[choices.player].includes(choices.computer);
 }
 
-function computerWins(computerChoice, playerChoice) {
-  return WINNING_COMBOS[computerChoice].includes(playerChoice);
+function computerWins(choices) {
+  return WINNING_COMBOS[choices.computer].includes(choices.player);
 }
 
-function tallyScore(playerChoice, computerChoice) {
-  if (playerWins(playerChoice, computerChoice)) {
-    playerScore += 1;
-  } else if (computerWins(computerChoice, playerChoice)) {
-    computerScore += 1;
+function tallyScore(choices, scores) {
+  if (playerWins(choices)) {
+    scores.player += 1;
+  } else if (computerWins(choices)) {
+    scores.computer += 1;
   }
 }
 
-function displayRoundWinner(playerChoice, computerChoice) {
-  prompt(`You chose ${VALID_CHOICES[playerChoice]}.`);
-  prompt(`The computer chose ${VALID_CHOICES[computerChoice]}.`);
+function incrementRound() {
+  roundNumber += 1;
+}
 
-  if (playerWins(playerChoice, computerChoice)) {
+function displayRoundWinner() {
+  prompt(`You chose ${VALID_CHOICES[choices.player]}.`);
+  prompt(`The computer chose ${VALID_CHOICES[choices.computer]}.`);
+
+  if (playerWins(choices)) {
     prompt('You win this round!');
-  } else if (playerChoice === computerChoice) {
+  } else if (choices.player === choices.computer) {
     prompt("It's a tie!");
   } else {
     prompt("Computer wins this round!");
   }
 }
 
+function displayCurrentRound() {
+  prompt(`Round ${roundNumber}!`);
+}
+
 function displayCurrentScores() {
-  prompt(`Player score = ${playerScore}. | Computer score = ${computerScore}.`);
+  prompt(`Player score = ${scores.player}. | Computer score = ${scores.computer}.`);
 }
 
 function displayMatchResult() {
+  displayCurrentScores();
 
-  if (playerScore === MAXIMUM_SCORE) {
+  if (scores.player === MAXIMUM_SCORE) {
     prompt(`You won the match!`);
-  } else if (computerScore === MAXIMUM_SCORE) {
+  } else if (scores.computer === MAXIMUM_SCORE) {
     prompt(`Computer won the match!`);
   }
 }
 
-function repeatRound() {
-  runGameLoop();
+function newRound() {
+  console.clear();
+  runGameLoop(choices);
 }
 
-function repeatGame() {
+function resetScores(scores) {
+  scores.player = 0;
+  scores.computer = 0;
+}
+
+function resetRoundCount() {
+  roundNumber = 1;
+}
+
+function newMatch() {
   prompt('Would you like to play another match? (Y / N)');
   let answer = readline.question().toLowerCase();
 
@@ -100,31 +125,36 @@ function repeatGame() {
 
   if (answer === 'y') {
     console.clear();
-    playerScore = 0;
-    computerScore = 0;
-    runGameLoop();
+    resetScores(scores);
+    resetRoundCount();
+    runGameLoop(choices);
   } else {
     prompt('Thank you for playing! Exiting RPSSL.');
   }
 }
 
-function runGameLoop() {
-  playerChoice = getPlayerChoice();
-  computerChoice = getComputerChoice();
-
-  displayRoundWinner(playerChoice, computerChoice);
-  tallyScore(playerChoice, computerChoice);
+function runGameLoop(choices) {
+  displayCurrentRound();
   displayCurrentScores();
 
-  if (playerScore === MAXIMUM_SCORE || computerScore === MAXIMUM_SCORE) {
+  choices.player = getPlayerChoice();
+  choices.computer = getComputerChoice();
+
+  displayRoundWinner(choices);
+  tallyScore(choices, scores);
+  incrementRound();
+
+  if (scores.player === MAXIMUM_SCORE || scores.computer === MAXIMUM_SCORE) {
     displayMatchResult();
-    repeatGame();
+    newMatch();
     return;
   }
 
-  repeatRound();
+  setTimeout(function() {
+    newRound();
+  }, 2000);
 }
 
 prompt('Welcome to Rock Paper Scissors Spock Lizard (RPSSL)!');
-prompt('You will be playing against the computer. The first to 5 wins the match!');
-runGameLoop();
+prompt('You will be playing against the computer. The first to 5 score wins the match!');
+runGameLoop(choices);
