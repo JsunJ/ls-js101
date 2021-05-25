@@ -18,6 +18,8 @@ function initializeBoard() {
 }
 
 function displayBoard(board) {
+  console.clear();
+
   console.log('');
   console.log(`     |     |`);
   console.log(`  ${board['1']}  |  ${board['2']}  |  ${board['3']}`);
@@ -37,11 +39,19 @@ function emptySquares(board) {
   return Object.keys(board).filter(key => board[key] === INITIAL_MARKER);
 }
 
+function boardFull(board) {
+  return emptySquares(board).length === 0;
+}
+
+function winCondition(board) {
+  return false;
+}
+
 function playerChoosesSquare(board) {
   let chosenSquare;
 
   while (true) {
-    prompt(`Choose a square ${emptySquares(board).join(', ')}:`);
+    prompt(`Choose a square: ${emptySquares(board).join(', ')}:`);
     chosenSquare = readline.question().trim();
     if (emptySquares(board).includes(chosenSquare)) break;
     
@@ -61,7 +71,11 @@ function computerChoosesSquare(board) {
 let board = initializeBoard();
 displayBoard(board);
 
-playerChoosesSquare(board);
-computerChoosesSquare(board);
+while (true) {
 
-displayBoard(board);
+  playerChoosesSquare(board);
+  computerChoosesSquare(board);
+  displayBoard(board);
+
+  if (winCondition(board) || boardFull(board)) break;
+}
