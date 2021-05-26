@@ -98,17 +98,13 @@ function detectRoundWinner(board) {
   for (let line = 0; line < winningLines.length; line += 1) {
     let [ sq1, sq2, sq3 ] = winningLines[line];
 
-    if (
-      board[sq1] === HUMAN_MARKER &&
-      board[sq2] === HUMAN_MARKER &&
-      board[sq3] === HUMAN_MARKER
-    ) {
+    if (board[sq1] === HUMAN_MARKER &&
+        board[sq2] === HUMAN_MARKER &&
+        board[sq3] === HUMAN_MARKER) {
       return 'Player';
-    } else if (
-      board[sq1] === COMPUTER_MARKER &&
-      board[sq2] === COMPUTER_MARKER &&
-      board[sq3] === COMPUTER_MARKER
-    ) {
+    } else if (board[sq1] === COMPUTER_MARKER &&
+               board[sq2] === COMPUTER_MARKER &&
+               board[sq3] === COMPUTER_MARKER) {
       return 'Computer';
     }
   }
