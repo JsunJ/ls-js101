@@ -1,10 +1,22 @@
 const readline = require('readline-sync');
+
 const INITIAL_MARKER = ' ';
 const HUMAN_MARKER = 'X';
 const COMPUTER_MARKER = 'O';
 
+const WINNING_SCORE = 5;
+
 function prompt(msg) {
   console.log(`=> ${msg}`);
+}
+
+function initializeScores() {
+  let scores = {};
+
+  scores['Player'] = 0;
+  scores['Computer'] = 0;
+
+  return scores;
 }
 
 function initializeBoard() {
@@ -17,10 +29,14 @@ function initializeBoard() {
   return board;
 }
 
-function displayBoard(board) {
+function displayScores(scores) {
   console.clear();
 
-  console.log(`You are ${HUMAN_MARKER}. Computer is ${COMPUTER_MARKER}.`);
+  console.log(`The first to 5 wins the match!\nPlayer Score: ${scores['Player']} | Computer Score: ${scores['Computer']}`);
+}
+
+function displayBoard(board) {
+  console.log(`\nYou are ${HUMAN_MARKER}. Computer is ${COMPUTER_MARKER}.`);
 
   console.log('');
   console.log(`     |     |`);
@@ -41,14 +57,24 @@ function emptySquares(board) {
   return Object.keys(board).filter(key => board[key] === INITIAL_MARKER);
 }
 
+function joinOr(arr, delimiter = ', ', joinWord = 'or') {
+  switch (arr.length) {
+    case 0: return '';
+    case 1: return String(arr[0]);
+    case 2: return arr.join(` ${joinWord} `);
+    default: return arr.slice(0, arr.length - 1).join(delimiter) +
+                    `${delimiter}${joinWord} ${arr[arr.length - 1]}`;
+  }
+}
+
 function playerChoosesSquare(board) {
   let chosenSquare;
 
   while (true) {
-    prompt(`Choose a square: ${emptySquares(board).join(', ')}:`);
+    prompt(`Choose a square: ${joinOr(emptySquares(board))}:`);
     chosenSquare = readline.question().trim();
     if (emptySquares(board).includes(chosenSquare)) break;
-    
+
     prompt('That is not a valid choice.');
   }
 
@@ -62,14 +88,10 @@ function computerChoosesSquare(board) {
   board[chosenSquare] = COMPUTER_MARKER;
 }
 
-function someoneWon(board) {
-  return !!detectWinner(board);
-}
-
-function detectWinner(board) {
+function detectRoundWinner(board) {
   let winningLines = [
     [1, 2, 3], [4, 5, 6], [7, 8, 9],
-    [1, 4, 7], [2, 5, 9], [3, 6, 9],
+    [1, 4, 7], [2, 5, 8], [3, 6, 9],
     [1, 5, 9], [3, 5, 7]
   ];
 
@@ -94,37 +116,87 @@ function detectWinner(board) {
   return null;
 }
 
+function someoneWonRound(board) {
+  return detectRoundWinner(board);
+}
+
 function boardFull(board) {
   return emptySquares(board).length === 0;
 }
 
-while (true) {
-  let board = initializeBoard();
-
-  while (true) {
-    displayBoard(board);
-
-    playerChoosesSquare(board);
-    if (someoneWon(board) || boardFull(board)) break;
-
-    computerChoosesSquare(board);
-    displayBoard(board);
-
-    if (someoneWon(board) || boardFull(board)) break;
+function detectMatchWinner(scores) {
+  if (scores['Player'] === WINNING_SCORE) {
+    return 'Player';
+  } else if (scores['Computer'] === WINNING_SCORE) {
+    return 'Computer';
   }
-
-  displayBoard(board);
-
-  if (someoneWon(board)) {
-    prompt(`${detectWinner(board)} won!`);
-  } else {
-    prompt("It's a tie!");
-  }
-
-  prompt('Would you like to play again? y/n');
-  let answer = readline.question().toLowerCase()[0];
-  if (answer !== 'y') break;
-
+  return null;
 }
 
-prompt('Thanks for playing Tic Tac Toe!');
+function someoneWonMatch(scores) {
+  return detectMatchWinner(scores);
+}
+
+while (true) { // Match loop
+  let scores = initializeScores();
+
+  while (true) { // Round loop
+    let board = initializeBoard();
+
+    while (true) { // Square choice loop
+      displayScores(scores);
+      displayBoard(board);
+
+      playerChoosesSquare(board);
+      if (someoneWonRound(board) || boardFull(board)) break;
+
+      computerChoosesSquare(board);
+      if (someoneWonRound(board) || boardFull(board)) break;
+    } // end of Square choice loop
+
+    displayScores(scores);
+    displayBoard(board);
+
+    if (someoneWonRound(board)) {
+
+      switch (detectRoundWinner(board)) {
+        case 'Player':
+          scores['Player'] += 1;
+          break;
+        case 'Computer':
+          scores['Computer'] += 1;
+          break;
+        default: break;
+      }
+
+      prompt(`${detectRoundWinner(board)} won this round!`);
+    } else {
+      prompt("It's a tie!");
+    }
+
+    if (someoneWonMatch(scores)) {
+      break;
+    }
+
+    prompt(`Enter 'C' to continue.`);
+    let response = readline.question().toLowerCase();
+    while (response !== 'c') {
+      prompt(`Please enter 'C' to continue the match.`);
+      response = readline.question().toLowerCase();
+    }
+  } // end of Round loop
+
+  prompt(`${detectMatchWinner(scores)} wins the match!`);
+  prompt(`Final Scores = Player: ${scores['Player']} | Computer: ${scores['Computer']}`);
+
+  prompt('\nWould you like to play again? Y/N');
+  let answer = readline.question().toLowerCase();
+  while (answer !== 'y' && answer !== 'n') {
+    prompt(`Please enter 'Y' to play another match or 'N' to exit.`);
+    answer = readline.question().toLowerCase();
+  }
+
+  if (answer !== 'y') break;
+} // end of Match loop
+
+prompt('Thank you for playing Tic Tac Toe!');
