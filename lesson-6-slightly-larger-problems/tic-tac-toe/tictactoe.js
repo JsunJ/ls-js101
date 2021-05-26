@@ -20,6 +20,8 @@ function initializeBoard() {
 function displayBoard(board) {
   console.clear();
 
+  console.log(`You are ${HUMAN_MARKER}. Computer is ${COMPUTER_MARKER}.`);
+
   console.log('');
   console.log(`     |     |`);
   console.log(`  ${board['1']}  |  ${board['2']}  |  ${board['3']}`);
@@ -37,14 +39,6 @@ function displayBoard(board) {
 
 function emptySquares(board) {
   return Object.keys(board).filter(key => board[key] === INITIAL_MARKER);
-}
-
-function boardFull(board) {
-  return emptySquares(board).length === 0;
-}
-
-function winCondition(board) {
-  return false;
 }
 
 function playerChoosesSquare(board) {
@@ -68,14 +62,69 @@ function computerChoosesSquare(board) {
   board[chosenSquare] = COMPUTER_MARKER;
 }
 
-let board = initializeBoard();
-displayBoard(board);
+function someoneWon(board) {
+  return !!detectWinner(board);
+}
+
+function detectWinner(board) {
+  let winningLines = [
+    [1, 2, 3], [4, 5, 6], [7, 8, 9],
+    [1, 4, 7], [2, 5, 9], [3, 6, 9],
+    [1, 5, 9], [3, 5, 7]
+  ];
+
+  for (let line = 0; line < winningLines.length; line += 1) {
+    let [ sq1, sq2, sq3 ] = winningLines[line];
+
+    if (
+      board[sq1] === HUMAN_MARKER &&
+      board[sq2] === HUMAN_MARKER &&
+      board[sq3] === HUMAN_MARKER
+    ) {
+      return 'Player';
+    } else if (
+      board[sq1] === COMPUTER_MARKER &&
+      board[sq2] === COMPUTER_MARKER &&
+      board[sq3] === COMPUTER_MARKER
+    ) {
+      return 'Computer';
+    }
+  }
+
+  return null;
+}
+
+function boardFull(board) {
+  return emptySquares(board).length === 0;
+}
 
 while (true) {
+  let board = initializeBoard();
 
-  playerChoosesSquare(board);
-  computerChoosesSquare(board);
+  while (true) {
+    displayBoard(board);
+
+    playerChoosesSquare(board);
+    if (someoneWon(board) || boardFull(board)) break;
+
+    computerChoosesSquare(board);
+    displayBoard(board);
+
+    if (someoneWon(board) || boardFull(board)) break;
+  }
+
   displayBoard(board);
 
-  if (winCondition(board) || boardFull(board)) break;
+  if (someoneWon(board)) {
+    prompt(`${detectWinner(board)} won!`);
+  } else {
+    prompt("It's a tie!");
+  }
+
+  prompt('Would you like to play again? y/n');
+  let answer = readline.question().toLowerCase()[0];
+  if (answer !== 'y') break;
+
 }
+
+prompt('Thanks for playing Tic Tac Toe!');
