@@ -5,11 +5,10 @@ const HUMAN_MARKER = 'X';
 const COMPUTER_MARKER = 'O';
 
 const WINNING_SCORE = 5;
-
 const WINNING_LINES = [
-  [1, 2, 3], [4, 5, 6], [7, 8, 9],
-  [1, 4, 7], [2, 5, 8], [3, 6, 9],
-  [1, 5, 9], [3, 5, 7]
+  [1, 2, 3], [4, 5, 6], [7, 8, 9], // rows
+  [1, 4, 7], [2, 5, 8], [3, 6, 9], // columns
+  [1, 5, 9], [3, 5, 7] // diagonals
 ];
 
 function prompt(msg) {
@@ -59,27 +58,6 @@ function displayBoard(board) {
   console.log('');
 }
 
-function emptySquares(board) {
-  return Object.keys(board).filter(key => board[key] === INITIAL_MARKER);
-}
-
-function findImmediateThreatSquare(line, board) {
-  let markersInLine = line.map(square => board[square]);
-
-  if (markersInLine.filter(marker => marker === HUMAN_MARKER).length === 2) { // if 2 human markers exist in a winning line
-    let markerInQuestion = markersInLine.filter(marker =>
-      marker !== HUMAN_MARKER)[0]; // the differing marker in the winning line
-    let squareInQuestion = line.find(square =>
-      board[square] === markerInQuestion); // the board square of the differing marker
-
-    if (markerInQuestion === INITIAL_MARKER) {
-      return squareInQuestion;
-    }
-  }
-
-  return null;
-}
-
 function joinOr(arr, delimiter = ', ', joinWord = 'or') {
   switch (arr.length) {
     case 0: return '';
@@ -104,20 +82,97 @@ function playerChoosesSquare(board) {
   board[chosenSquare] = HUMAN_MARKER;
 }
 
-function computerChoosesSquare(board) {
-  let chosenSquare;
+function emptySquares(board) {
+  return Object.keys(board).filter(key => board[key] === INITIAL_MARKER);
+}
+
+function findImmediateThreatSquare(line, board) {
+  let markersInLine = line.map(square => board[square]);
+
+  if (markersInLine.filter(marker => marker === HUMAN_MARKER).length === 2) { // if 2 human markers exist in a winning line
+    let markerInQuestion = markersInLine.filter(marker =>
+      marker !== HUMAN_MARKER)[0]; // the differing marker in the winning line
+    let squareInQuestion = line.find(square =>
+      board[square] === markerInQuestion); // the board square of the differing marker
+
+    if (markerInQuestion === INITIAL_MARKER) {
+      return squareInQuestion;
+    }
+  }
+
+  return null;
+}
+
+function findImmediateWinSquare(line, board) {
+  let markersInLine = line.map(square => board[square]);
+
+  if (markersInLine.filter(marker => marker === COMPUTER_MARKER).length === 2) { // if 2 computer markers exist in a winning line
+    let markerInQuestion = markersInLine.filter(marker =>
+      marker !== COMPUTER_MARKER)[0]; // the differing marker in the winning line
+    let squareInQuestion = line.find(square =>
+      board[square] === markerInQuestion); // the board square of the differing marker
+
+    if (markerInQuestion === INITIAL_MARKER) {
+      return squareInQuestion;
+    }
+  }
+
+  return null;
+}
+
+function chooseOffensively(board) {
+  let square;
 
   for (let index = 0; index < WINNING_LINES.length; index += 1) {
     let line = WINNING_LINES[index];
-    chosenSquare = findImmediateThreatSquare(line, board);
-    if (chosenSquare) break;
+    square = findImmediateWinSquare(line, board);
+    if (square) break;
+  }
+  return square;
+}
+
+function chooseDefensively(board) {
+  let square;
+
+  for (let index = 0; index < WINNING_LINES.length; index += 1) {
+    let line = WINNING_LINES[index];
+    square = findImmediateThreatSquare(line, board);
+    if (square) break;
+  }
+  return square;
+}
+
+function chooseRandomly(board) {
+  let square;
+
+  let randomIndex = Math.floor(Math.random() * emptySquares(board).length);
+  square = emptySquares(board)[randomIndex];
+  return square;
+}
+
+function computerChoosesSquare(board) {
+  let chosenSquare;
+
+  chosenSquare = chooseOffensively(board);
+
+  if (chosenSquare) {
+    board[chosenSquare] = COMPUTER_MARKER;
+    return; // stop function execution after a valid offensive choice
   }
 
-  if (!chosenSquare) {
-    let randomIndex = Math.floor(Math.random() * emptySquares(board).length);
-    chosenSquare = emptySquares(board)[randomIndex];
+  chosenSquare = chooseDefensively(board);
+
+  if (chosenSquare) {
+    board[chosenSquare] = COMPUTER_MARKER;
+    return; // stop function execution after a valid defensive choice
   }
 
+  // chooseMiddleSquare()
+  //
+  //
+  //
+
+  chosenSquare = chooseRandomly(board);
   board[chosenSquare] = COMPUTER_MARKER;
 }
 
@@ -195,14 +250,14 @@ while (true) { // Match loop
 
       prompt(`${detectRoundWinner(board)} won this round!\n`);
     } else {
-      prompt("It's a tie!\n");
+      prompt("It's a tie!\n"); // board is full
     }
 
     if (someoneWonMatch(scores)) {
-      break;
+      break; // out of the round loop
     }
 
-    prompt(`Enter 'C' to continue.`);
+    prompt(`Enter 'C' to continue.`); // a pause for the player to examine the round before the next one starts
     let response = readline.question().toLowerCase();
     while (response !== 'c') {
       prompt(`Please enter 'C' to continue the match.`);
