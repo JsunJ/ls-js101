@@ -6,6 +6,12 @@ const COMPUTER_MARKER = 'O';
 
 const WINNING_SCORE = 5;
 
+const WINNING_LINES = [
+  [1, 2, 3], [4, 5, 6], [7, 8, 9],
+  [1, 4, 7], [2, 5, 8], [3, 6, 9],
+  [1, 5, 9], [3, 5, 7]
+];
+
 function prompt(msg) {
   console.log(`=> ${msg}`);
 }
@@ -57,6 +63,23 @@ function emptySquares(board) {
   return Object.keys(board).filter(key => board[key] === INITIAL_MARKER);
 }
 
+function findImmediateThreatSquare(line, board) {
+  let markersInLine = line.map(square => board[square]);
+
+  if (markersInLine.filter(marker => marker === HUMAN_MARKER).length === 2) { // if 2 human markers exist in a winning line
+    let markerInQuestion = markersInLine.filter(marker =>
+      marker !== HUMAN_MARKER)[0]; // the differing marker in the winning line
+    let squareInQuestion = line.find(square =>
+      board[square] === markerInQuestion); // the board square of the differing marker
+
+    if (markerInQuestion === INITIAL_MARKER) {
+      return squareInQuestion;
+    }
+  }
+
+  return null;
+}
+
 function joinOr(arr, delimiter = ', ', joinWord = 'or') {
   switch (arr.length) {
     case 0: return '';
@@ -82,21 +105,26 @@ function playerChoosesSquare(board) {
 }
 
 function computerChoosesSquare(board) {
-  let randomIndex = Math.floor(Math.random() * emptySquares(board).length);
-  let chosenSquare = emptySquares(board)[randomIndex];
+  let chosenSquare;
+
+  for (let index = 0; index < WINNING_LINES.length; index += 1) {
+    let line = WINNING_LINES[index];
+    chosenSquare = findImmediateThreatSquare(line, board);
+    if (chosenSquare) break;
+  }
+
+  if (!chosenSquare) {
+    let randomIndex = Math.floor(Math.random() * emptySquares(board).length);
+    chosenSquare = emptySquares(board)[randomIndex];
+  }
 
   board[chosenSquare] = COMPUTER_MARKER;
 }
 
 function detectRoundWinner(board) {
-  let winningLines = [
-    [1, 2, 3], [4, 5, 6], [7, 8, 9],
-    [1, 4, 7], [2, 5, 8], [3, 6, 9],
-    [1, 5, 9], [3, 5, 7]
-  ];
 
-  for (let line = 0; line < winningLines.length; line += 1) {
-    let [ sq1, sq2, sq3 ] = winningLines[line];
+  for (let line = 0; line < WINNING_LINES.length; line += 1) {
+    let [ sq1, sq2, sq3 ] = WINNING_LINES[line];
 
     if (board[sq1] === HUMAN_MARKER &&
         board[sq2] === HUMAN_MARKER &&
@@ -165,9 +193,9 @@ while (true) { // Match loop
         default: break;
       }
 
-      prompt(`${detectRoundWinner(board)} won this round!`);
+      prompt(`${detectRoundWinner(board)} won this round!\n`);
     } else {
-      prompt("It's a tie!");
+      prompt("It's a tie!\n");
     }
 
     if (someoneWonMatch(scores)) {
@@ -183,9 +211,9 @@ while (true) { // Match loop
   } // end of Round loop
 
   prompt(`${detectMatchWinner(scores)} wins the match!`);
-  prompt(`Final Scores = Player: ${scores['Player']} | Computer: ${scores['Computer']}`);
+  prompt(`Final Scores = Player: ${scores['Player']} | Computer: ${scores['Computer']}\n`);
 
-  prompt('\nWould you like to play again? Y/N');
+  prompt('Would you like to play again? Y/N');
   let answer = readline.question().toLowerCase();
   while (answer !== 'y' && answer !== 'n') {
     prompt(`Please enter 'Y' to play another match or 'N' to exit.`);
