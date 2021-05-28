@@ -11,7 +11,7 @@ const WINNING_LINES = [
   [1, 5, 9], [3, 5, 7] // diagonals
 ];
 
-const FIRST_MOVE = 'choose';
+const FIRST_MOVE = 'choose'; // valid settings = 'player', 'computer' or 'choose'
 
 function prompt(msg) {
   console.log(`=> ${msg}`);
@@ -286,10 +286,10 @@ while (true) { // Match loop
 
   console.log(`> The ${currentPlayer} has the first move of the match. <`);
 
-  prompt(`Enter 'C' to start.`); // lets player manually start the match after reading the introduction
+  prompt(`Enter 'S' to start.`); // lets player manually start the match after reading the introduction
   let response = readline.question().toLowerCase();
-  while (response !== 'c') {
-    prompt(`Please enter 'C' to start the match.`);
+  while (response !== 's') {
+    prompt(`Please enter 'S' to start the match.`);
     response = readline.question().toLowerCase();
   }
 
