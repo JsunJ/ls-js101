@@ -11,10 +11,40 @@ const WINNING_LINES = [
   [1, 5, 9], [3, 5, 7] // diagonals
 ];
 
-const FIRST_MOVE = 'choose'; // valid settings = 'player', 'computer' or 'choose'
+const FIRST_MOVE = 'computer'; // valid settings : 'player', 'computer' or 'choose'
+const ALTERNATE_FIRST_MOVE_BY_ROUND = 'yes'; // valid settings : 'yes' or 'no'
 
 function prompt(msg) {
   console.log(`=> ${msg}`);
+}
+
+function displayIntroduction() {
+  console.log('Welcome to Tic Tac Toe!\n');
+  console.log(`     |     |`);
+  console.log(`  X  |  O  |  X`);
+  console.log(`     |     |`);
+  console.log(`-----+-----+-----`);
+  console.log(`     |     |`);
+  console.log(`  O  |  X  |  O`);
+  console.log(`     |     |`);
+  console.log(`-----+-----+-----`);
+  console.log(`     |     |`);
+  console.log(`  X  |  O  |  X`);
+  console.log(`     |     |`);
+  console.log('\n~RULES~\n * You will be playing against a computer. *\n * The first to win 5 rounds will win the match. *');
+}
+
+function displaySettings() {
+  console.log('\n~SETTINGS~');
+
+  if (FIRST_MOVE !== 'choose' && ALTERNATE_FIRST_MOVE_BY_ROUND === 'yes') {
+    console.log(` % The ${FIRST_MOVE} has the first move of the match. %`);
+    console.log(' % First moves will alternate every round. %\n');
+  } else if (FIRST_MOVE !== 'choose' && ALTERNATE_FIRST_MOVE_BY_ROUND === 'no') {
+    console.log(` % The ${FIRST_MOVE} has the first move. %\n`);
+  } else if (ALTERNATE_FIRST_MOVE_BY_ROUND === 'yes') { // chooseFirstMover() will display the other possible scenario setting
+    console.log(' % First moves will alternate every round. %\n');
+  }
 }
 
 function initializeScores() {
@@ -36,27 +66,8 @@ function initializeBoard() {
   return board;
 }
 
-function displayIntroduction() {
-  console.log('Welcome to Tic Tac Toe!');
-  console.log('');
-  console.log(`     |     |`);
-  console.log(`  X  |  O  |  X`);
-  console.log(`     |     |`);
-  console.log(`-----+-----+-----`);
-  console.log(`     |     |`);
-  console.log(`  O  |  X  |  O`);
-  console.log(`     |     |`);
-  console.log(`-----+-----+-----`);
-  console.log(`     |     |`);
-  console.log(`  X  |  O  |  X`);
-  console.log(`     |     |`);
-  console.log('');
-  console.log('~RULES~\nYou will be playing against a computer.\nThe first to win 5 rounds will win the match.\nFirst moves will alternate between each player every round.\n');
-}
-
 function displayScores(scores) {
   console.clear();
-
   console.log(`The first to 5 wins the match!\nPlayer Score: ${scores['Player']} | Computer Score: ${scores['Computer']}`);
 }
 
@@ -79,31 +90,37 @@ function displayBoard(board) {
 }
 
 function chooseFirstMover() {
-  prompt('Who would you like to have the first move of the match? Player | Computer');
+  prompt('Who would you like to have the first move?');
+  prompt("Enter 'P' for Player or 'C' for Computer");
   let firstMover = readline.question().toLowerCase();
-  while (firstMover !== 'player' && firstMover !== 'computer') {
-    prompt(`Please enter 'Player' or 'Computer' to determine the first mover of the match.`);
+  while (firstMover !== 'p' && firstMover !== 'c') {
+    prompt(`Please enter 'P' for Player or 'C' for Computer to determine who moves first.`);
     firstMover = readline.question().toLowerCase();
   }
-  return firstMover;
-}
-
-function joinOr(arr, delimiter = ', ', joinWord = 'or') {
-  switch (arr.length) {
-    case 0: return '';
-    case 1: return String(arr[0]);
-    case 2: return arr.join(` ${joinWord} `);
-    default: return arr.slice(0, arr.length - 1).join(delimiter) +
-                    `${delimiter}${joinWord} ${arr[arr.length - 1]}`;
-  }
-}
-
-function chooseSquare(board, currentPlayer) {
-  if (currentPlayer === 'player') {
-    return playerChoosesSquare(board);
+  if (firstMover === 'p') {
+    console.log(` % The player has the first move. %\n`);
+    return 'player';
   } else {
-    return computerChoosesSquare(board);
+    console.log(` % The computer has the first move. %\n`);
+    return 'computer';
   }
+}
+
+function determineCurrentPlayer() {
+  let currentPlayer;
+
+  switch (FIRST_MOVE) {
+    case 'player':
+      currentPlayer = 'player';
+      break;
+    case 'computer':
+      currentPlayer = 'computer';
+      break;
+    case 'choose':
+      currentPlayer = chooseFirstMover();
+  }
+
+  return currentPlayer;
 }
 
 function alternatePlayer(currentPlayer) {
@@ -119,6 +136,48 @@ function alternatePlayer(currentPlayer) {
   return newPlayer;
 }
 
+function promptToStart() {
+  prompt(`Enter 'S' to start.`);
+  let response = readline.question().toLowerCase();
+  while (response !== 's') {
+    prompt(`Please enter 'S' to start the match.`);
+    response = readline.question().toLowerCase();
+  }
+}
+
+function promptToContinue() {
+  prompt(`Enter 'C' to continue.`);
+  let response = readline.question().toLowerCase();
+  while (response !== 'c') {
+    prompt(`Please enter 'C' to continue the match.`);
+    response = readline.question().toLowerCase();
+  }
+}
+
+function promptToRestart() {
+  prompt('Would you like to restart the game? Y/N');
+  let answer = readline.question().toLowerCase();
+  while (answer !== 'y' && answer !== 'n') {
+    prompt(`Please enter 'Y' to play another match or 'N' to exit.`);
+    answer = readline.question().toLowerCase();
+  }
+  return answer;
+}
+
+function joinOr(arr, delimiter = ', ', joinWord = 'or') {
+  switch (arr.length) {
+    case 0: return '';
+    case 1: return String(arr[0]);
+    case 2: return arr.join(` ${joinWord} `);
+    default: return arr.slice(0, arr.length - 1).join(delimiter) +
+                    `${delimiter}${joinWord} ${arr[arr.length - 1]}`;
+  }
+}
+
+function emptySquares(board) {
+  return Object.keys(board).filter(key => board[key] === INITIAL_MARKER);
+}
+
 function playerChoosesSquare(board) {
   let chosenSquare;
 
@@ -131,10 +190,6 @@ function playerChoosesSquare(board) {
   }
 
   board[chosenSquare] = HUMAN_MARKER;
-}
-
-function emptySquares(board) {
-  return Object.keys(board).filter(key => board[key] === INITIAL_MARKER);
 }
 
 function findImmediateThreatSquare(line, board) {
@@ -208,23 +263,31 @@ function computerChoosesSquare(board) {
 
   if (chosenSquare) {
     board[chosenSquare] = COMPUTER_MARKER;
-    return; // stop function execution after a valid offensive choice
+    return; // stop function execution after a valid offensive choice is made
   }
 
   chosenSquare = chooseDefensively(board);
 
   if (chosenSquare) {
     board[chosenSquare] = COMPUTER_MARKER;
-    return; // stop function execution after a valid defensive choice
+    return; // stop function execution after a valid defensive choice is made
   }
 
   if (board[5] === INITIAL_MARKER) {
     board[5] = COMPUTER_MARKER;
-    return;
+    return; // stop function execution after a center square choice is made
   }
 
   chosenSquare = chooseRandomly(board);
   board[chosenSquare] = COMPUTER_MARKER;
+}
+
+function chooseSquare(board, currentPlayer) {
+  if (currentPlayer === 'player') {
+    return playerChoosesSquare(board);
+  } else {
+    return computerChoosesSquare(board);
+  }
 }
 
 function detectRoundWinner(board) {
@@ -267,88 +330,73 @@ function someoneWonMatch(scores) {
   return detectMatchWinner(scores);
 }
 
-while (true) { // Match loop
-  let scores = initializeScores();
-  let currentPlayer;
-
-  displayIntroduction();
-
-  switch (FIRST_MOVE) {
-    case 'player':
-      currentPlayer = 'player';
+function tallyScore(scores, board) {
+  switch (detectRoundWinner(board)) {
+    case 'Player':
+      scores['Player'] += 1;
       break;
-    case 'computer':
-      currentPlayer = 'computer';
+    case 'Computer':
+      scores['Computer'] += 1;
       break;
-    case 'choose':
-      currentPlayer = chooseFirstMover(); //
+    default: break;
   }
+}
 
-  console.log(`> The ${currentPlayer} has the first move of the match. <`);
+function pickSquares(scores, board, currentPlayer) {
+  while (true) {
+    displayScores(scores);
+    displayBoard(board);
 
-  prompt(`Enter 'S' to start.`); // lets player manually start the match after reading the introduction
-  let response = readline.question().toLowerCase();
-  while (response !== 's') {
-    prompt(`Please enter 'S' to start the match.`);
-    response = readline.question().toLowerCase();
+    chooseSquare(board, currentPlayer);
+    currentPlayer = alternatePlayer(currentPlayer);
+
+    if (someoneWonRound(board) || boardFull(board)) break;
   }
+}
 
-  while (true) { // Round loop
+function playRounds(scores, currentPlayer) {
+  while (true) {
     let board = initializeBoard();
 
-    while (true) { // Square choice loop
-      displayScores(scores);
-      displayBoard(board);
+    pickSquares(scores, board, currentPlayer); // square choice loop
 
-      chooseSquare(board, currentPlayer);
-      currentPlayer = alternatePlayer(currentPlayer);
-
-      if (someoneWonRound(board) || boardFull(board)) break;
-    } // end of Square choice loop
+    if (ALTERNATE_FIRST_MOVE_BY_ROUND === 'yes') currentPlayer = alternatePlayer(currentPlayer);
 
     displayScores(scores);
     displayBoard(board);
 
     if (someoneWonRound(board)) {
-
-      switch (detectRoundWinner(board)) {
-        case 'Player':
-          scores['Player'] += 1;
-          break;
-        case 'Computer':
-          scores['Computer'] += 1;
-          break;
-        default: break;
-      }
-
+      tallyScore(scores, board);
       prompt(`${detectRoundWinner(board)} won this round!\n`);
-    } else { // board is full
+    } else {
       prompt("It's a tie!\n");
     }
 
     if (someoneWonMatch(scores)) {
-      break; // out of the round loop
+      break;
     }
 
-    prompt(`Enter 'C' to continue.`); // lets player manually progress the match and examine the board after each round
-    let response = readline.question().toLowerCase();
-    while (response !== 'c') {
-      prompt(`Please enter 'C' to continue the match.`);
-      response = readline.question().toLowerCase();
-    }
-  } // end of Round loop
+    promptToContinue(); // lets player examine the board/scores post-round and manually progress the match
+  }
+}
+
+while (true) { // GAME LOOP START
+  displayIntroduction();
+  displaySettings();
+
+  let scores = initializeScores();
+  let currentPlayer = determineCurrentPlayer(); // based on the FIRST_MOVE setting
+
+  promptToStart(); // lets player read the introduction/settings and manually start the match
+
+  playRounds(scores, currentPlayer); // round loop
 
   prompt(`${detectMatchWinner(scores)} wins the match!`);
   prompt(`Final Scores = Player: ${scores['Player']} | Computer: ${scores['Computer']}\n`);
 
-  prompt('Would you like to restart the game? Y/N');
-  let answer = readline.question().toLowerCase();
-  while (answer !== 'y' && answer !== 'n') {
-    prompt(`Please enter 'Y' to play another match or 'N' to exit.`);
-    answer = readline.question().toLowerCase();
-  }
+  if (promptToRestart() !== 'y') break;
 
-  if (answer !== 'y') break;
-} // end of Match loop
+  console.clear();
+} // GAME LOOP END
 
 prompt('Thank you for playing Tic Tac Toe!');
