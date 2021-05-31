@@ -14,6 +14,8 @@ const WINNING_LINES = [
 const FIRST_MOVE = 'computer'; // valid settings : 'player', 'computer' or 'choose'
 const ALTERNATE_FIRST_MOVE_BY_ROUND = 'yes'; // valid settings : 'yes' or 'no'
 
+const MIDDLE_SQUARE = 5;
+
 function prompt(msg) {
   console.log(`=> ${msg}`);
 }
@@ -31,7 +33,7 @@ function displayIntroduction() {
   console.log(`     |     |`);
   console.log(`  X  |  O  |  X`);
   console.log(`     |     |`);
-  console.log('\n~RULES~\n * You will be playing against a computer. *\n * The first to win 5 rounds will win the match. *');
+  console.log(`\n~RULES~\n * You will be playing against a computer. *\n * The first to win ${WINNING_SCORE} rounds will win the match. *`);
 }
 
 function displaySettings() {
@@ -42,7 +44,7 @@ function displaySettings() {
     console.log(' % First moves will alternate every round. %\n');
   } else if (FIRST_MOVE !== 'choose' && ALTERNATE_FIRST_MOVE_BY_ROUND === 'no') {
     console.log(` % The ${FIRST_MOVE} has the first move. %\n`);
-  } else if (ALTERNATE_FIRST_MOVE_BY_ROUND === 'yes') { // chooseFirstMover() will display the other possible scenario setting
+  } else if (ALTERNATE_FIRST_MOVE_BY_ROUND === 'yes') {
     console.log(' % First moves will alternate every round. %\n');
   }
 }
@@ -68,7 +70,7 @@ function initializeBoard() {
 
 function displayScores(scores) {
   console.clear();
-  console.log(`The first to 5 wins the match!\nPlayer Score: ${scores['Player']} | Computer Score: ${scores['Computer']}`);
+  console.log(`The first to ${WINNING_SCORE} wins the match!\nPlayer Score: ${scores['Player']} | Computer Score: ${scores['Computer']}`);
 }
 
 function displayBoard(board) {
@@ -195,11 +197,11 @@ function playerChoosesSquare(board) {
 function findImmediateThreatSquare(line, board) {
   let markersInLine = line.map(square => board[square]);
 
-  if (markersInLine.filter(marker => marker === HUMAN_MARKER).length === 2) { // if 2 human markers exist in a winning line
+  if (markersInLine.filter(marker => marker === HUMAN_MARKER).length === 2) {
     let markerInQuestion = markersInLine.filter(marker =>
-      marker !== HUMAN_MARKER)[0]; // the differing marker in the winning line
+      marker !== HUMAN_MARKER)[0];
     let squareInQuestion = line.find(square =>
-      board[square] === markerInQuestion); // the board square of the differing marker
+      board[square] === markerInQuestion);
 
     if (markerInQuestion === INITIAL_MARKER) {
       return squareInQuestion;
@@ -212,11 +214,11 @@ function findImmediateThreatSquare(line, board) {
 function findImmediateWinSquare(line, board) {
   let markersInLine = line.map(square => board[square]);
 
-  if (markersInLine.filter(marker => marker === COMPUTER_MARKER).length === 2) { // if 2 computer markers exist in a winning line
+  if (markersInLine.filter(marker => marker === COMPUTER_MARKER).length === 2) {
     let markerInQuestion = markersInLine.filter(marker =>
-      marker !== COMPUTER_MARKER)[0]; // the differing marker in the winning line
+      marker !== COMPUTER_MARKER)[0];
     let squareInQuestion = line.find(square =>
-      board[square] === markerInQuestion); // the board square of the differing marker
+      board[square] === markerInQuestion);
 
     if (markerInQuestion === INITIAL_MARKER) {
       return squareInQuestion;
@@ -261,24 +263,18 @@ function computerChoosesSquare(board) {
 
   chosenSquare = chooseOffensively(board);
 
-  if (chosenSquare) {
-    board[chosenSquare] = COMPUTER_MARKER;
-    return; // stop function execution after a valid offensive choice is made
+  if (!chosenSquare) {
+    chosenSquare = chooseDefensively(board);
   }
 
-  chosenSquare = chooseDefensively(board);
-
-  if (chosenSquare) {
-    board[chosenSquare] = COMPUTER_MARKER;
-    return; // stop function execution after a valid defensive choice is made
+  if (!chosenSquare && board[MIDDLE_SQUARE] === INITIAL_MARKER) {
+    chosenSquare = board[MIDDLE_SQUARE];
   }
 
-  if (board[5] === INITIAL_MARKER) {
-    board[5] = COMPUTER_MARKER;
-    return; // stop function execution after a center square choice is made
+  if (!chosenSquare) {
+    chosenSquare = chooseRandomly(board);
   }
 
-  chosenSquare = chooseRandomly(board);
   board[chosenSquare] = COMPUTER_MARKER;
 }
 
@@ -358,7 +354,7 @@ function playRounds(scores, currentPlayer) {
   while (true) {
     let board = initializeBoard();
 
-    pickSquares(scores, board, currentPlayer); // square choice loop
+    pickSquares(scores, board, currentPlayer);
 
     if (ALTERNATE_FIRST_MOVE_BY_ROUND === 'yes') currentPlayer = alternatePlayer(currentPlayer);
 
@@ -376,7 +372,7 @@ function playRounds(scores, currentPlayer) {
       break;
     }
 
-    promptToContinue(); // lets player examine the board/scores post-round and manually progress the match
+    promptToContinue();
   }
 }
 
@@ -385,11 +381,11 @@ while (true) { // GAME LOOP START
   displaySettings();
 
   let scores = initializeScores();
-  let currentPlayer = determineCurrentPlayer(); // based on the FIRST_MOVE setting
+  let currentPlayer = determineCurrentPlayer();
 
-  promptToStart(); // lets player read the introduction/settings and manually start the match
+  promptToStart();
 
-  playRounds(scores, currentPlayer); // round loop
+  playRounds(scores, currentPlayer);
 
   prompt(`${detectMatchWinner(scores)} wins the match!`);
   prompt(`Final Scores = Player: ${scores['Player']} | Computer: ${scores['Computer']}\n`);
