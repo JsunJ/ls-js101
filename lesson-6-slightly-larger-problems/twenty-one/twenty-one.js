@@ -158,11 +158,11 @@ function humanizeHand(hand) {
 
 function displayCurrentHands(playerHand, dealerHand) {
   console.log('');
-  console.log(" Dealer's hand: ONE HIDDEN CARD,", humanizeHand(dealerHand.slice(1, dealerHand.length)));
+  console.log(" Dealer's Hand: *ONE HIDDEN CARD*", humanizeHand(dealerHand.slice(1, dealerHand.length)));
   console.log('');
   console.log(' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -');
   console.log('');
-  console.log(" Your hand:", humanizeHand(playerHand));
+  console.log(" Your Hand:", humanizeHand(playerHand));
   console.log('');
 }
 
@@ -407,4 +407,5 @@ while (true) { // main loop
   console.clear();
 }
 
-console.log('Thank you for playing Twenty-One!');
+clearLastLine();
+console.log('\nThank you for playing Twenty-One! Goodbye!');
