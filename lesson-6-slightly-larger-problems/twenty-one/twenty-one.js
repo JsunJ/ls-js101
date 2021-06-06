@@ -48,7 +48,7 @@ function displayIntroduction() {
   displayRandomCardArt();
   console.log('\n~Introduction~');
   console.log(' * You will be playing against a computer dealer. *');
-  console.log(` * Get your card total as close to ${BUST_LIMIT} as possible without going over! *`);
+  console.log(` * Hit to get your card total as close to ${BUST_LIMIT} as possible, be beware, going over will lose the round! *`);
   console.log(` * The first to win ${WINNING_SCORE} rounds will win the game. *\n`);
 }
 
@@ -394,7 +394,7 @@ function displayGameWinner(scores) {
   console.log(`Final Scores = You: ${scores.player} | Dealer: ${scores.dealer}\n`);
 }
 
-while (true) { // main loop
+while (true) {
   displayIntroduction();
 
   let scores = initializeScores();
